@@ -1,9 +1,10 @@
-import mongoose,{Schema, schema} from 'mongoose'
+import mongoose,{Schema,} from 'mongoose'
+import bcrypt from 'bcrypt'
 
-const userSchema=new Schema(
+ const userSchema=new Schema(
     {
         username:{
-            type:string,
+            type:String,
             required:true,
             unique:true,
             lowercase:true,
@@ -11,24 +12,24 @@ const userSchema=new Schema(
             index:true
         },
         email:{
-            type:string,
+            type:String,
             required:true,
             unique:true,
             lowercase:true,
             trim:true,
         },
         fullname:{
-            type:string,
+            type:String,
             required:true,
             trim:true,
             index:true
         },
-        avtar:{
-            type:string,//cloudnary url
+        avatar:{
+            type:String,//cloudnary url
             required:true,
         },
         coverImage:{
-            type:string,//cloudnary img
+            type:String,//cloudnary img
         },
         watchHistory:{
             type:Schema.Types.ObjectId,
@@ -39,13 +40,13 @@ const userSchema=new Schema(
             required:[true,'password is required']
         },
         refreshToken:{
-            type:string
+            type:String
         }
     },{timestamps:true}
 )
 userSchema.pre("save",async function(next){
-    if(this.isModified("password"))return next();
-    this.password=bcryt.hash(this.password,10)
+    if(!this.isModified("password"))return next();
+    this.password=await bcrypt.hash(this.password,10)
     next()
 })
 userSchema.methods.isPasswordCorrect=async function(password){
